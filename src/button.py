@@ -9,7 +9,7 @@ class Button:
             image, (int(width * scale), int(height * scale))
         )
         self.rect = self.image.get_rect()
-        self.rect.topleft = (x, y)
+        self.rect.center = (x, y)
         self.clicked = False
 
     def draw(self, surface):
@@ -19,6 +19,7 @@ class Button:
         # check mouse over and clicked conditions
         if self.rect.collidepoint(mouse_pos):
             if pygame.mouse.get_pressed()[0] == 1 and not self.clicked:
+                print("CLICADOOOO")
                 self.clicked = True
                 action = True
 

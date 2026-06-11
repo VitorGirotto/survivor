@@ -1,6 +1,7 @@
 import pygame
 
 from constants import SCREEN_WIDTH, SCREEN_HEIGHT
+from button import Button
 
 
 class Menu:
@@ -10,6 +11,19 @@ class Menu:
         self.bg_image = pygame.image.load(
             "../assets/adriano-bugnotto-background.jpg"
         ).convert_alpha()
+        self.play_button_img = pygame.image.load("../assets/button.png").convert_alpha()
+        self.logo_img = pygame.image.load("../assets/logo.png").convert_alpha()
+
+        self.logo = Button(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - 160, self.logo_img, 1)
+        self.play_button = Button(
+            SCREEN_WIDTH / 2 - 240, SCREEN_HEIGHT / 2 + 124, self.play_button_img, 1
+        )
+        self.leaderboard_button = Button(
+            SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 124, self.play_button_img, 1
+        )
+        self.exit_button = Button(
+            SCREEN_WIDTH / 2 + 240, SCREEN_HEIGHT / 2 + 124, self.play_button_img, 1
+        )
         self.rect = self.bg_image.get_rect(left=0, top=0)
 
     def run(self):
@@ -21,5 +35,12 @@ class Menu:
                     quit()
 
             self.screen.blit(source=self.bg_image, dest=self.rect)
+            self.logo.draw(self.screen)
+            if self.play_button.draw(self.screen):
+                pass
+            self.leaderboard_button.draw(self.screen)
+            if self.exit_button.draw(self.screen):
+                pygame.quit()
+                quit()
 
             pygame.display.flip()
