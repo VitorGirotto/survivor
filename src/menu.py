@@ -1,7 +1,9 @@
 import pygame
+from os.path import join
 
 from constants import SCREEN_WIDTH, SCREEN_HEIGHT
 from button import Button
+from game import Game
 
 
 class Menu:
@@ -9,10 +11,14 @@ class Menu:
         pygame.init()
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.bg_image = pygame.image.load(
-            "../assets/adriano-bugnotto-background.jpg"
+            join("..", "assets", "adriano-bugnotto-background.jpg")
         ).convert_alpha()
-        self.play_button_img = pygame.image.load("../assets/button.png").convert_alpha()
-        self.logo_img = pygame.image.load("../assets/logo.png").convert_alpha()
+        self.play_button_img = pygame.image.load(
+            join("..", "assets", "button.png")
+        ).convert_alpha()
+        self.logo_img = pygame.image.load(
+            join("..", "assets", "logo.png")
+        ).convert_alpha()
 
         self.logo = Button(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - 160, self.logo_img, 1)
         self.play_button = Button(
@@ -37,7 +43,8 @@ class Menu:
             self.screen.blit(source=self.bg_image, dest=self.rect)
             self.logo.draw(self.screen)
             if self.play_button.draw(self.screen):
-                pass
+                game = Game()
+                game.run()
             self.leaderboard_button.draw(self.screen)
             if self.exit_button.draw(self.screen):
                 pygame.quit()
