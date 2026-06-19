@@ -2,6 +2,8 @@ import pygame
 from pygame.display import update
 
 from constants import SCREEN_HEIGHT, SCREEN_WIDTH
+from enemy import Enemy
+import enemy
 from player import Player
 
 
@@ -11,6 +13,7 @@ class Game:
         self.clock = pygame.time.Clock()
         self.dt = 0.0
 
+        # self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.map_bg_image = pygame.image.load(
             "../assets/GAME_BACKGROUND.png"
@@ -19,10 +22,13 @@ class Game:
 
         self.drawable: pygame.sprite.Group = pygame.sprite.Group()
         self.updatable: pygame.sprite.Group = pygame.sprite.Group()
+        self.enemies: pygame.sprite.Group = pygame.sprite.Group()
 
         Player.containers = (self.drawable, self.updatable)
+        Enemy.containers = (self.drawable, self.updatable)
 
         player = Player("PLAYER_PLACEHOLDER", SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
+        enemy = Enemy("ENEMY_PLACEHOLDER", 50, 100, player)
 
     def run(self):
 

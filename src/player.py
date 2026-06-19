@@ -22,4 +22,5 @@ class Player(Entity):
         if keys[pygame.K_RIGHT] or keys[pygame.K_d]:
             self.position.x += 150 * dt
 
+        # self.rect position gets updated after every key event
         self.rect.center = (round(self.position.x), round(self.position.y))
