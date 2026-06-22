@@ -1,9 +1,9 @@
 import pygame
-from pygame.display import update
 
 from constants import SCREEN_HEIGHT, SCREEN_WIDTH
 from enemy import Enemy
 import enemy
+from enemySpawn import MapField
 from player import Player
 
 
@@ -12,6 +12,7 @@ class Game:
         pygame.init()
         self.clock = pygame.time.Clock()
         self.dt = 0.0
+        self.counter = 0
 
         # self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -25,10 +26,15 @@ class Game:
         self.enemies: pygame.sprite.Group = pygame.sprite.Group()
 
         Player.containers = (self.drawable, self.updatable)
-        Enemy.containers = (self.drawable, self.updatable)
+        Enemy.containers = (self.drawable, self.updatable, self.enemies)
+        MapField.containers = self.updatable
 
-        player = Player("PLAYER_PLACEHOLDER", SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
-        enemy = Enemy("ENEMY_PLACEHOLDER", 50, 100, player)
+        self.player = Player(
+            "PLAYER_PLACEHOLDER", SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2
+        )
+        map_field = MapField(self.player, self.enemies)
+        # enemy = Enemy("ENEMY_PLACEHOLDER", 50, 100, self.player)
+        # enemy2 = Enemy("ENEMY_PLACEHOLDER", 550, 100, player)
 
     def run(self):
 
@@ -42,8 +48,7 @@ class Game:
 
             self.screen.fill("purple")
             # self.screen.blit(source=self.map_bg_image, dest=self.rect)
-            # print(pygame.sprite.Group.sprites(self.updatable))
-            # print(pygame.sprite.Sprite.groups(player))
+            # print(pygame.sprite.Group.sprites(self.enemies))
 
             for obj in self.drawable:
                 obj.draw(self.screen)

@@ -10,6 +10,7 @@ class Entity(pygame.sprite.Sprite):
         else:
             super().__init__()
         self.name = name
+        self.velocity = pygame.Vector2(0, 0)
         self.position: pygame.Vector2 = pygame.Vector2(x, y)
         self.surf = pygame.image.load("../assets/" + name + ".png").convert_alpha()
         self.rect = self.surf.get_rect(center=(x, y))
