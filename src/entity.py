@@ -15,9 +15,9 @@ class Entity(pygame.sprite.Sprite):
         self.surf = pygame.image.load("../assets/" + name + ".png").convert_alpha()
         self.rect = self.surf.get_rect(center=(x, y))
 
-        # self.rect.center = (round(x), round(y))
-        def draw(self, screen: pygame.Surface):
-            pass
+    # self.rect.center = (round(x), round(y))
+    def draw(self, screen: pygame.Surface):
+        pass
 
-        def update(self, dt: float):
-            pass
+    def update(self, dt: float):
+        pass
