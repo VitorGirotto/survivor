@@ -2,7 +2,6 @@ import pygame
 
 from constants import SCREEN_HEIGHT, SCREEN_WIDTH
 from enemy import Enemy
-import enemy
 from enemySpawn import MapField
 from player import Player
 
@@ -33,8 +32,6 @@ class Game:
             "PLAYER_PLACEHOLDER", SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2
         )
         map_field = MapField(self.player, self.enemies)
-        # enemy = Enemy("ENEMY_PLACEHOLDER", 50, 100, self.player)
-        # enemy2 = Enemy("ENEMY_PLACEHOLDER", 550, 100, player)
 
     def run(self):
 
@@ -44,11 +41,12 @@ class Game:
                 if event.type == pygame.QUIT:
                     return
 
+            # for frame in PLAYER_SPRITES["walk_right"]:
+            #     print(frame)
+            # print(player_frames["walk_right"]["walk_right1"])
             self.updatable.update(self.dt)
 
             self.screen.fill("purple")
-            # self.screen.blit(source=self.map_bg_image, dest=self.rect)
-            # print(pygame.sprite.Group.sprites(self.enemies))
 
             for obj in self.drawable:
                 obj.draw(self.screen)
