@@ -5,6 +5,7 @@ from enemy import Enemy
 from enemySpawn import MapField
 from entity import ASSETS_DIR
 from player import Player
+from shot import Shot
 
 
 class Game:
@@ -28,9 +29,13 @@ class Game:
         Player.containers = (self.drawable, self.updatable)
         Enemy.containers = (self.drawable, self.updatable, self.enemies)
         MapField.containers = self.updatable
+        Shot.containers = (self.drawable, self.updatable)
 
         self.player = Player(
-            "PLAYER_PLACEHOLDER", SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2
+            "PLAYER_PLACEHOLDER",
+            SCREEN_WIDTH // 2,
+            SCREEN_HEIGHT // 2,
+            self.enemies,
         )
         MapField(self.player, self.enemies)
 
