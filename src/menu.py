@@ -1,8 +1,8 @@
 import pygame
-from os.path import join
 
 from constants import SCREEN_WIDTH, SCREEN_HEIGHT
 from button import Button
+from entity import ASSETS_DIR
 from game import Game
 
 
@@ -11,14 +11,12 @@ class Menu:
         pygame.init()
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.bg_image = pygame.image.load(
-            join("..", "assets", "adriano-bugnotto-background.jpg")
+            ASSETS_DIR / "adriano-bugnotto-background.jpg"
         ).convert_alpha()
         self.play_button_img = pygame.image.load(
-            join("..", "assets", "button.png")
+            ASSETS_DIR / "button.png"
         ).convert_alpha()
-        self.logo_img = pygame.image.load(
-            join("..", "assets", "logo.png")
-        ).convert_alpha()
+        self.logo_img = pygame.image.load(ASSETS_DIR / "logo.png").convert_alpha()
 
         self.logo = Button(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - 160, self.logo_img, 1)
         self.play_button = Button(

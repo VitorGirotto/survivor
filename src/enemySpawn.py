@@ -1,10 +1,9 @@
 import random
 from collections.abc import Callable
 import pygame
-from pygame.sprite import Group
 
 from enemy import Enemy
-from constants import ENEMY_SPAWN_RATE_SECONDS, ENEMY_SPEED, SCREEN_HEIGHT, SCREEN_WIDTH
+from constants import ENEMY_SPAWN_RATE_SECONDS, SCREEN_HEIGHT, SCREEN_WIDTH
 from player import Player
 
 Edge = tuple[pygame.Vector2, Callable[[float], pygame.Vector2]]
@@ -43,7 +42,7 @@ class MapField(pygame.sprite.Sprite):
         name: str,
         position: pygame.Vector2,
     ) -> None:
-        enemy = Enemy(name, position.x, position.y, self.player, self.enemies)
+        Enemy(name, position.x, position.y, self.player, self.enemies)
 
     def update(self, dt: float) -> None:
         self.spawn_time += dt

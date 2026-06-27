@@ -1,4 +1,9 @@
+from pathlib import Path
+
 import pygame
+
+
+ASSETS_DIR = Path(__file__).resolve().parent.parent / "assets"
 
 
 class Entity(pygame.sprite.Sprite):
@@ -12,7 +17,7 @@ class Entity(pygame.sprite.Sprite):
         self.name = name
         self.velocity = pygame.Vector2(0, 0)
         self.position: pygame.Vector2 = pygame.Vector2(x, y)
-        self.surf = pygame.image.load("../assets/" + name + ".png").convert_alpha()
+        self.surf = pygame.image.load(ASSETS_DIR / f"{name}.png").convert_alpha()
         self.rect = self.surf.get_rect(center=(x, y))
 
     # self.rect.center = (round(x), round(y))

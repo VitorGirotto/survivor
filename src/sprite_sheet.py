@@ -1,19 +1,43 @@
+from pathlib import Path
+
 import pygame
 
 
+Frame = tuple[int, int, int, int]
+
+
 class SpriteSheet:
-    def __init__(self, filename: str) -> None:
-        self.sprite_image = pygame.image.load(filename).convert_alpha()
+    def __init__(self, filename: str | Path) -> None:
+        self.image = pygame.image.load(filename)
+        if pygame.display.get_init() and pygame.display.get_surface() is not None:
+            self.image = self.image.convert_alpha()
 
-    def get_sprite(self, frame):
-        image = self.sprite_image.subsurface(pygame.Rect(frame))
-        # sprite = pygame.Surface((frame[2], frame[3]))
-        image.set_colorkey((0, 255, 0))
-        image.blit(self.sprite_image, (0, 0), (x, y, w, h))
-        return image
+    def get_sprite(
+        self,
+        frame: Frame,
+        *,
+        scale: float = 1,
+        colorkey: pygame.Color | str | tuple[int, int, int] | None = None,
+    ) -> pygame.Surface:
+        sprite = self.image.subsurface(pygame.Rect(frame)).copy()
 
-    # def parse_sprite(self, entity_sprite, action):
-    #     sprite = entity_sprite[action]
-    #     x, y, w, h = sprite["x"], sprite["y"], sprite["w"], sprite["h"]
-    #     image = self.get_sprite(x, y, w, h)
-    #     return image
+        if colorkey is not None:
+            sprite.set_colorkey(colorkey)
+
+        if scale != 1:
+            width = round(sprite.get_width() * scale)
+            height = round(sprite.get_height() * scale)
+            sprite = pygame.transform.scale(sprite, (width, height))
+
+        return sprite
+
+    def get_sprites(
+        self,
+        frames: list[Frame] | tuple[Frame, ...],
+        *,
+        scale: float = 1,
+        colorkey: pygame.Color | str | tuple[int, int, int] | None = None,
+    ) -> list[pygame.Surface]:
+        return [
+            self.get_sprite(frame, scale=scale, colorkey=colorkey) for frame in frames
+        ]

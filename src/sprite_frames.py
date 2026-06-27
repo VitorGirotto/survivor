@@ -1,4 +1,9 @@
-PLAYER_WALK_RIGHT = [
+from sprite_sheet import Frame
+
+
+PLAYER_IDLE: list[Frame] = [(0, 0, 64, 64)]
+
+PLAYER_WALK_RIGHT: list[Frame] = [
     (0, 384, 64, 64),
     (64, 384, 64, 64),
     (128, 384, 64, 64),
@@ -7,7 +12,7 @@ PLAYER_WALK_RIGHT = [
     (320, 384, 64, 64),
 ]
 
-PLAYER_WALK_LEFT = [
+PLAYER_WALK_LEFT: list[Frame] = [
     (0, 448, 64, 64),
     (64, 448, 64, 64),
     (128, 448, 64, 64),
@@ -16,25 +21,8 @@ PLAYER_WALK_LEFT = [
     (320, 448, 64, 64),
 ]
 
-PLAYER_IDLE = [(0, 0, 64, 64)]
-
-# PLAYER_SPRITES = {
-#     "walk_right": {
-#         "walk_right1": {"x": 0, "y": 384, "w": 64, "h": 64},
-#         "walk_right2": {"x": 64, "y": 384, "w": 64, "h": 64},
-#         "walk_right3": {"x": 128, "y": 384, "w": 64, "h": 64},
-#         "walk_right4": {"x": 192, "y": 384, "w": 64, "h": 64},
-#         "walk_right5": {"x": 256, "y": 384, "w": 64, "h": 64},
-#         "walk_right6": {"x": 320, "y": 384, "w": 64, "h": 64},
-#     },
-#     "walk_left": {
-#         "walk_left1": {"x": 0, "y": 448, "w": 64, "h": 64},
-#         "walk_left2": {"x": 64, "y": 448, "w": 64, "h": 64},
-#         "walk_left3": {"x": 128, "y": 448, "w": 64, "h": 64},
-#         "walk_left4": {"x": 192, "y": 448, "w": 64, "h": 64},
-#         "walk_left5": {"x": 256, "y": 448, "w": 64, "h": 64},
-#         "walk_left6": {"x": 320, "y": 448, "w": 64, "h": 64},
-#     },
-# }
-#
-# ENEMY_SPRITES = {}
+PLAYER_ANIMATION_FRAMES: dict[str, list[Frame]] = {
+    "idle": PLAYER_IDLE,
+    "walk_left": PLAYER_WALK_LEFT,
+    "walk_right": PLAYER_WALK_RIGHT,
+}

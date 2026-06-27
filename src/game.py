@@ -3,6 +3,7 @@ import pygame
 from constants import SCREEN_HEIGHT, SCREEN_WIDTH
 from enemy import Enemy
 from enemySpawn import MapField
+from entity import ASSETS_DIR
 from player import Player
 
 
@@ -16,7 +17,7 @@ class Game:
         # self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.map_bg_image = pygame.image.load(
-            "../assets/GAME_BACKGROUND.png"
+            ASSETS_DIR / "GAME_BACKGROUND.png"
         ).convert_alpha()
         self.rect = self.map_bg_image.get_rect(left=0, top=0)
 
@@ -31,7 +32,7 @@ class Game:
         self.player = Player(
             "PLAYER_PLACEHOLDER", SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2
         )
-        map_field = MapField(self.player, self.enemies)
+        MapField(self.player, self.enemies)
 
     def run(self):
 
