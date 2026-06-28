@@ -2,11 +2,33 @@ import pygame
 
 from constants import ENEMY_SPAWN_RATE_SECONDS
 from enemySpawn import MapField
-from game import format_elapsed_time
+from game import Game, format_elapsed_time
 
 
 class FakePlayer:
     position = pygame.Vector2(0, 0)
+
+
+class FakeTextSurface:
+    def get_rect(self, **kwargs):
+        return kwargs
+
+
+class FakeFont:
+    def __init__(self):
+        self.render_calls = []
+
+    def render(self, text, antialias, color):
+        self.render_calls.append((text, antialias, color))
+        return FakeTextSurface()
+
+
+class FakeScreen:
+    def __init__(self):
+        self.blit_calls = []
+
+    def blit(self, surface, rect):
+        self.blit_calls.append((surface, rect))
 
 
 def make_map_field():
@@ -28,6 +50,27 @@ def test_format_elapsed_time_as_minutes_and_seconds():
     assert format_elapsed_time(0) == "00:00"
     assert format_elapsed_time(65.9) == "01:05"
     assert format_elapsed_time(600) == "10:00"
+
+
+def test_game_score_increments_by_one_per_killed_enemy():
+    game = Game.__new__(Game)
+    game.score = 0
+
+    game.increase_score(pygame.sprite.Sprite())
+
+    assert game.score == 1
+
+
+def test_game_draws_score_in_top_left_corner():
+    game = Game.__new__(Game)
+    game.score = 7
+    game.timer_font = FakeFont()
+    game.screen = FakeScreen()
+
+    game.draw_score()
+
+    assert game.timer_font.render_calls == [("Score: 7", True, "white")]
+    assert game.screen.blit_calls[0][1] == {"topleft": (20, 20)}
 
 
 def test_enemy_spawn_interval_gets_half_second_faster_every_15_seconds():

@@ -49,8 +49,8 @@ class MapField(pygame.sprite.Sprite):
     def update(self, dt: float) -> None:
         self.elapsed_time += dt
         self.spawn_interval = max(
-            0.5,
-            ENEMY_SPAWN_RATE_SECONDS - 0.5 * int(self.elapsed_time // 15),
+            0.1,
+            ENEMY_SPAWN_RATE_SECONDS - 0.1 * int(self.elapsed_time // 12),
         )
         self.spawn_time += dt
         if self.spawn_time > self.spawn_interval:

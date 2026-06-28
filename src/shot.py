@@ -1,3 +1,5 @@
+from collections.abc import Callable
+
 import pygame
 
 from constants import SHOT_RADIUS
@@ -17,6 +19,7 @@ class Shot(pygame.sprite.Sprite):
         damage: int,
         max_distance: float | None = None,
         radius: int = SHOT_RADIUS,
+        on_target_killed: Callable[[pygame.sprite.Sprite], None] | None = None,
     ) -> None:
         if hasattr(self, "containers"):
             super().__init__(*self.containers)
@@ -33,6 +36,7 @@ class Shot(pygame.sprite.Sprite):
         self.damage = damage
         self.max_distance = max_distance
         self.radius = radius
+        self.on_target_killed = on_target_killed
 
         size = self.radius * 2
         self.surf = pygame.Surface((size, size), pygame.SRCALPHA)
@@ -61,6 +65,8 @@ class Shot(pygame.sprite.Sprite):
             setattr(target, "health", target_health)
             if target_health <= 0:
                 target.kill()
+                if self.on_target_killed is not None:
+                    self.on_target_killed(target)
         else:
             target.kill()
 

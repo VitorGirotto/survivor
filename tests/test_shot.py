@@ -66,6 +66,44 @@ def test_shot_kills_target_when_damage_reduces_health_to_zero():
     assert not target.alive()
 
 
+def test_shot_calls_callback_when_damage_kills_target():
+    killed_targets = []
+    target = DamageableTarget(center=(20, 20), health=4)
+    targets = pygame.sprite.Group(target)
+    shot, _shots = make_shot(
+        20,
+        20,
+        pygame.Vector2(1, 0),
+        targets,
+        speed=100,
+        damage=4,
+        on_target_killed=killed_targets.append,
+    )
+
+    shot.update(0.1)
+
+    assert killed_targets == [target]
+
+
+def test_shot_does_not_call_callback_when_target_survives():
+    killed_targets = []
+    target = DamageableTarget(center=(20, 20), health=10)
+    targets = pygame.sprite.Group(target)
+    shot, _shots = make_shot(
+        20,
+        20,
+        pygame.Vector2(1, 0),
+        targets,
+        speed=100,
+        damage=4,
+        on_target_killed=killed_targets.append,
+    )
+
+    shot.update(0.1)
+
+    assert killed_targets == []
+
+
 def test_shot_can_collide_with_entity_without_health():
     target = TargetWithoutHealth(center=(20, 20))
     targets = pygame.sprite.Group(target)

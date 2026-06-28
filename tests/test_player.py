@@ -1,6 +1,6 @@
 import pygame
 
-from constants import ENEMY_CONTACT_DAMAGE, PLAYER_HEALTH
+from constants import ENEMY_CONTACT_DAMAGE, PLAYER_HEALTH, PLAYER_SHOT_DAMAGE
 from game import Game
 from player import Player
 from shot import Shot
@@ -31,7 +31,7 @@ class NoKeysPressed:
         return False
 
 
-def make_player(center=(0, 0), targets=None):
+def make_player(center=(0, 0), targets=None, on_target_killed=None):
     player = Player.__new__(Player)
     player.position = pygame.Vector2(center)
     player.surf = pygame.Surface((20, 20), pygame.SRCALPHA)
@@ -41,6 +41,7 @@ def make_player(center=(0, 0), targets=None):
     player.shot_cooldown_remaining = 0.0
     player.contact_damage_cooldown_remaining = 0.0
     player.health = PLAYER_HEALTH
+    player.on_target_killed = on_target_killed
     player.animations = {"idle": FakeAnimation(), "walk_left": FakeAnimation()}
     player.current_animation_name = "idle"
     player.facing_animation_name = "walk_left"
@@ -114,6 +115,22 @@ def test_player_update_shoots_automatically_when_cooldown_is_ready(monkeypatch):
     player.update(0.1)
 
     assert len(shots) == 1
+
+
+def test_player_shot_callback_increments_when_enemy_is_killed():
+    shots = pygame.sprite.Group()
+    Shot.containers = (shots,)
+    killed_targets = []
+    enemy = Target((100, 0))
+    enemy.health = PLAYER_SHOT_DAMAGE
+    player = make_player(
+        targets=pygame.sprite.Group(enemy), on_target_killed=killed_targets.append
+    )
+
+    player.shoot()
+    shots.sprites()[0].update(0.45)
+
+    assert killed_targets == [enemy]
 
 
 def test_player_can_move_through_enemies():

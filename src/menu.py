@@ -14,19 +14,22 @@ class Menu:
             ASSETS_DIR / "adriano-bugnotto-background.jpg"
         ).convert_alpha()
         self.play_button_img = pygame.image.load(
-            ASSETS_DIR / "button.png"
+            ASSETS_DIR / "play_button.png"
+        ).convert_alpha()
+        self.exit_button_img = pygame.image.load(
+            ASSETS_DIR / "exit_button.png"
         ).convert_alpha()
         self.logo_img = pygame.image.load(ASSETS_DIR / "logo.png").convert_alpha()
 
         self.logo = Button(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - 160, self.logo_img, 1)
         self.play_button = Button(
-            SCREEN_WIDTH / 2 - 240, SCREEN_HEIGHT / 2 + 124, self.play_button_img, 1
+            SCREEN_WIDTH / 2 - 120, SCREEN_HEIGHT / 2 + 124, self.play_button_img, 1
         )
-        self.leaderboard_button = Button(
-            SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 124, self.play_button_img, 1
-        )
+        # self.leaderboard_button = Button(
+        #     SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 + 124, self.play_button_img, 1
+        # )
         self.exit_button = Button(
-            SCREEN_WIDTH / 2 + 240, SCREEN_HEIGHT / 2 + 124, self.play_button_img, 1
+            SCREEN_WIDTH / 2 + 120, SCREEN_HEIGHT / 2 + 124, self.exit_button_img, 1
         )
         self.rect = self.bg_image.get_rect(left=0, top=0)
 
@@ -43,7 +46,7 @@ class Menu:
             if self.play_button.draw(self.screen):
                 game = Game()
                 game.run()
-            self.leaderboard_button.draw(self.screen)
+            # self.leaderboard_button.draw(self.screen)
             if self.exit_button.draw(self.screen):
                 pygame.quit()
                 quit()

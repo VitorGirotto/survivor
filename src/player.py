@@ -1,3 +1,5 @@
+from collections.abc import Callable
+
 import pygame
 
 from animation import Animation
@@ -24,12 +26,14 @@ class Player(Entity):
         x: float,
         y: float,
         shot_targets: pygame.sprite.Group | None = None,
+        on_target_killed: Callable[[pygame.sprite.Sprite], None] | None = None,
     ) -> None:
         super().__init__(name, x, y)
         self.shot_targets = (
             shot_targets if shot_targets is not None else pygame.sprite.Group()
         )
         self.health = PLAYER_HEALTH
+        self.on_target_killed = on_target_killed
         self.shot_cooldown_remaining = 0.0
         self.contact_damage_cooldown_remaining = 0.0
         self.animations = self._load_animations()
@@ -93,6 +97,7 @@ class Player(Entity):
             speed=PLAYER_SHOT_SPEED,
             damage=PLAYER_SHOT_DAMAGE,
             max_distance=PLAYER_SHOT_MAX_DISTANCE,
+            on_target_killed=self.on_target_killed,
         )
         self.shot_cooldown_remaining = PLAYER_SHOT_COOLDOWN_SECONDS
 
@@ -152,6 +157,10 @@ class Player(Entity):
                 self.facing_animation_name = "walk_left"
             elif direction.x > 0:
                 self.facing_animation_name = "walk_right"
+            if direction.y > 0:
+                self.facing_animation_name = "walk_down"
+            elif direction.y < 0:
+                self.facing_animation_name = "walk_up"
 
             self._set_animation(self.facing_animation_name)
         else:
