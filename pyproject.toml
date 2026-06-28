@@ -12,3 +12,28 @@ dependencies = [
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]
+
+[tool.setuptools]
+packages = ["assets"]
+py-modules = [
+    "animation",
+    "button",
+    "constants",
+    "enemy",
+    "enemySpawn",
+    "entity",
+    "game",
+    "main",
+    "menu",
+    "player",
+    "shot",
+    "sprite_frames",
+    "sprite_sheet",
+]
+
+[tool.setuptools.package-dir]
+"" = "src"
+assets = "assets"
+
+[tool.setuptools.package-data]
+assets = ["*.jpg", "*.png"]

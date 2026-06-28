@@ -1,4 +1,5 @@
 import pygame
+import pytest
 
 from constants import ENEMY_SPAWN_RATE_SECONDS
 from enemySpawn import MapField
@@ -84,17 +85,17 @@ def test_game_draws_background_image_at_map_rect():
     assert game.screen.blit_calls == [(game.map_bg_image, game.rect)]
 
 
-def test_enemy_spawn_interval_gets_half_second_faster_every_15_seconds():
+def test_enemy_spawn_interval_gets_tenth_second_faster_every_12_seconds():
     field = make_map_field()
 
-    field.update(15.0)
+    field.update(12.0)
 
-    assert field.spawn_interval == ENEMY_SPAWN_RATE_SECONDS - 0.5
+    assert field.spawn_interval == pytest.approx(ENEMY_SPAWN_RATE_SECONDS - 0.1)
 
 
-def test_enemy_spawn_interval_has_minimum_half_second():
+def test_enemy_spawn_interval_has_minimum_tenth_second():
     field = make_map_field()
 
-    field.update(60.0)
+    field.update(180.0)
 
-    assert field.spawn_interval == 0.5
+    assert field.spawn_interval == pytest.approx(0.1)

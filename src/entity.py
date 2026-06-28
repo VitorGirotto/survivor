@@ -3,7 +3,17 @@ from pathlib import Path
 import pygame
 
 
-ASSETS_DIR = Path(__file__).resolve().parent.parent / "assets"
+def _resolve_assets_dir() -> Path:
+    module_dir = Path(__file__).resolve().parent
+    source_assets_dir = module_dir.parent / "assets"
+    packaged_assets_dir = module_dir / "assets"
+
+    if source_assets_dir.exists():
+        return source_assets_dir
+    return packaged_assets_dir
+
+
+ASSETS_DIR = _resolve_assets_dir()
 
 
 class Entity(pygame.sprite.Sprite):
