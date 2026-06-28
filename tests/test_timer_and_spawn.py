@@ -73,6 +73,17 @@ def test_game_draws_score_in_top_left_corner():
     assert game.screen.blit_calls[0][1] == {"topleft": (20, 20)}
 
 
+def test_game_draws_background_image_at_map_rect():
+    game = Game.__new__(Game)
+    game.screen = FakeScreen()
+    game.map_bg_image = pygame.Surface((100, 80), pygame.SRCALPHA)
+    game.rect = game.map_bg_image.get_rect(left=0, top=0)
+
+    game.draw_background()
+
+    assert game.screen.blit_calls == [(game.map_bg_image, game.rect)]
+
+
 def test_enemy_spawn_interval_gets_half_second_faster_every_15_seconds():
     field = make_map_field()
 

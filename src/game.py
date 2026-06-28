@@ -58,6 +58,9 @@ class Game:
         score_rect = score_surf.get_rect(topleft=(20, 20))
         self.screen.blit(score_surf, score_rect)
 
+    def draw_background(self) -> None:
+        self.screen.blit(self.map_bg_image, self.rect)
+
     def draw_timer(self) -> None:
         timer_text = format_elapsed_time(self.elapsed_time)
         timer_surf = self.timer_font.render(timer_text, True, "white")
@@ -74,7 +77,6 @@ class Game:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     return
-
             # for frame in PLAYER_SPRITES["walk_right"]:
             #     print(frame)
             # print(player_frames["walk_right"]["walk_right1"])
@@ -83,7 +85,7 @@ class Game:
             if self.is_game_over():
                 return
 
-            self.screen.fill("purple")
+            self.draw_background()
 
             for obj in self.drawable:
                 obj.draw(self.screen)
