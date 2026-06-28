@@ -51,19 +51,32 @@ class Shot(pygame.sprite.Sprite):
         self._kill_if_out_of_range()
 
     def _handle_collision(self) -> None:
-        hit_targets = pygame.sprite.spritecollide(self, self.targets, False)
-        if not hit_targets:
+        target = self._collided_target()
+        if target is None:
             return
 
-        target = hit_targets[0]
-        if hasattr(target, "health"):
-            target.health -= self.damage
-            if target.health <= 0:
+        target_health = getattr(target, "health", None)
+        if target_health is not None:
+            target_health -= self.damage
+            setattr(target, "health", target_health)
+            if target_health <= 0:
                 target.kill()
         else:
             target.kill()
 
         self.kill()
+
+    def _collided_target(self) -> pygame.sprite.Sprite | None:
+        shot_rect = self.rect
+        if shot_rect is None:
+            return None
+
+        for target in self.targets:
+            target_rect = getattr(target, "rect", None)
+            if target_rect is not None and shot_rect.colliderect(target_rect):
+                return target
+
+        return None
 
     def _kill_if_out_of_range(self) -> None:
         if self.max_distance is None:

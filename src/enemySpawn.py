@@ -34,6 +34,8 @@ class MapField(pygame.sprite.Sprite):
     def __init__(self, player, enemies) -> None:
         pygame.sprite.Sprite.__init__(self, self.containers)
         self.spawn_time: float = 0.0
+        self.elapsed_time: float = 0.0
+        self.spawn_interval: float = ENEMY_SPAWN_RATE_SECONDS
         self.player: Player = player
         self.enemies: pygame.sprite.Group = enemies
 
@@ -45,8 +47,13 @@ class MapField(pygame.sprite.Sprite):
         Enemy(name, position.x, position.y, self.player, self.enemies)
 
     def update(self, dt: float) -> None:
+        self.elapsed_time += dt
+        self.spawn_interval = max(
+            0.5,
+            ENEMY_SPAWN_RATE_SECONDS - 0.5 * int(self.elapsed_time // 15),
+        )
         self.spawn_time += dt
-        if self.spawn_time > ENEMY_SPAWN_RATE_SECONDS:
+        if self.spawn_time > self.spawn_interval:
             self.spawn_time = 0
 
             # spawn new enemy at a random edge of the screen

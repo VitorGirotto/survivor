@@ -23,7 +23,9 @@ class Player(Entity):
         shot_targets: pygame.sprite.Group | None = None,
     ) -> None:
         super().__init__(name, x, y)
-        self.shot_targets = shot_targets or pygame.sprite.Group()
+        self.shot_targets = (
+            shot_targets if shot_targets is not None else pygame.sprite.Group()
+        )
         self.shot_cooldown_remaining = 0.0
         self.animations = self._load_animations()
         self.current_animation_name = "idle"
@@ -48,10 +50,35 @@ class Player(Entity):
     def draw(self, screen: pygame.Surface):
         screen.blit(source=self.surf, dest=self.rect)
 
+    def _nearest_shot_target(self) -> pygame.sprite.Sprite | None:
+        nearest_target = None
+        nearest_distance = None
+
+        for target in self.shot_targets:
+            target_rect = getattr(target, "rect", None)
+            if target_rect is None:
+                continue
+
+            target_position = pygame.Vector2(target_rect.center)
+            distance = self.position.distance_to(target_position)
+            if nearest_distance is None or distance < nearest_distance:
+                nearest_target = target
+                nearest_distance = distance
+
+        return nearest_target
+
     def shoot(self) -> None:
-        direction = pygame.Vector2(1, 0)
-        if self.facing_animation_name == "walk_left":
-            direction = pygame.Vector2(-1, 0)
+        target = self._nearest_shot_target()
+        if target is None:
+            return
+
+        target_rect = getattr(target, "rect", None)
+        if target_rect is None:
+            return
+
+        direction = pygame.Vector2(target_rect.center) - self.position
+        if direction.length() == 0:
+            return
 
         Shot(
             self.position.x,
@@ -63,6 +90,42 @@ class Player(Entity):
             max_distance=PLAYER_SHOT_MAX_DISTANCE,
         )
         self.shot_cooldown_remaining = PLAYER_SHOT_COOLDOWN_SECONDS
+
+    def _move_with_collision(
+        self, direction: pygame.Vector2, dt: float, *, speed: float
+    ) -> None:
+        if direction.length() == 0:
+            return
+
+        movement = direction.normalize() * speed * dt
+        distance = movement.length()
+        step_distance = max(1, min(self.rect.width, self.rect.height) / 2)
+        steps = max(1, int(distance / step_distance) + 1)
+        step = movement / steps
+
+        for _ in range(steps):
+            previous_position = self.position.copy()
+            previous_center = self.rect.center
+
+            self.position += step
+            self.rect.center = (round(self.position.x), round(self.position.y))
+
+            if self._is_colliding_with_shot_target():
+                self.position = previous_position
+                self.rect.center = previous_center
+                return
+
+    def _is_colliding_with_shot_target(self) -> bool:
+        player_rect = self.rect
+        if player_rect is None:
+            return False
+
+        for target in self.shot_targets:
+            target_rect = getattr(target, "rect", None)
+            if target_rect is not None and player_rect.colliderect(target_rect):
+                return True
+
+        return False
 
     def update(self, dt: float) -> None:
         keys = pygame.key.get_pressed()
@@ -80,7 +143,7 @@ class Player(Entity):
 
         if direction.length() > 0:
             direction = direction.normalize()
-            self.position += direction * 150 * dt
+            self._move_with_collision(direction, dt, speed=150)
 
             if direction.x < 0:
                 self.facing_animation_name = "walk_left"
@@ -91,7 +154,7 @@ class Player(Entity):
         else:
             self._set_animation("idle")
 
-        if keys[pygame.K_SPACE] and self.shot_cooldown_remaining == 0:
+        if self.shot_cooldown_remaining == 0:
             self.shoot()
 
         self.animations[self.current_animation_name].update(dt)

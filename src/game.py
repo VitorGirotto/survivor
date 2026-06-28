@@ -8,12 +8,21 @@ from player import Player
 from shot import Shot
 
 
+def format_elapsed_time(elapsed_time: float) -> str:
+    total_seconds = int(elapsed_time)
+    minutes = total_seconds // 60
+    seconds = total_seconds % 60
+    return f"{minutes:02}:{seconds:02}"
+
+
 class Game:
     def __init__(self):
         pygame.init()
         self.clock = pygame.time.Clock()
         self.dt = 0.0
+        self.elapsed_time = 0.0
         self.counter = 0
+        self.timer_font = pygame.font.Font(None, 36)
 
         # self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -37,7 +46,13 @@ class Game:
             SCREEN_HEIGHT // 2,
             self.enemies,
         )
-        MapField(self.player, self.enemies)
+        self.map_field = MapField(self.player, self.enemies)
+
+    def draw_timer(self) -> None:
+        timer_text = format_elapsed_time(self.elapsed_time)
+        timer_surf = self.timer_font.render(timer_text, True, "white")
+        timer_rect = timer_surf.get_rect(topright=(SCREEN_WIDTH - 20, 20))
+        self.screen.blit(timer_surf, timer_rect)
 
     def run(self):
 
@@ -50,12 +65,14 @@ class Game:
             # for frame in PLAYER_SPRITES["walk_right"]:
             #     print(frame)
             # print(player_frames["walk_right"]["walk_right1"])
+            self.elapsed_time += self.dt
             self.updatable.update(self.dt)
 
             self.screen.fill("purple")
 
             for obj in self.drawable:
                 obj.draw(self.screen)
+            self.draw_timer()
 
             pygame.display.flip()
             self.dt = self.clock.tick(60) / 1000
