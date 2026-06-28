@@ -54,6 +54,9 @@ class Game:
         timer_rect = timer_surf.get_rect(topright=(SCREEN_WIDTH - 20, 20))
         self.screen.blit(timer_surf, timer_rect)
 
+    def is_game_over(self) -> bool:
+        return self.player.health <= 0
+
     def run(self):
 
         running = True
@@ -67,6 +70,8 @@ class Game:
             # print(player_frames["walk_right"]["walk_right1"])
             self.elapsed_time += self.dt
             self.updatable.update(self.dt)
+            if self.is_game_over():
+                return
 
             self.screen.fill("purple")
 

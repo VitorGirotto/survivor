@@ -2,6 +2,9 @@ import pygame
 
 from animation import Animation
 from constants import (
+    ENEMY_CONTACT_DAMAGE,
+    PLAYER_CONTACT_DAMAGE_COOLDOWN_SECONDS,
+    PLAYER_HEALTH,
     PLAYER_SHOT_COOLDOWN_SECONDS,
     PLAYER_SHOT_DAMAGE,
     PLAYER_SHOT_MAX_DISTANCE,
@@ -26,7 +29,9 @@ class Player(Entity):
         self.shot_targets = (
             shot_targets if shot_targets is not None else pygame.sprite.Group()
         )
+        self.health = PLAYER_HEALTH
         self.shot_cooldown_remaining = 0.0
+        self.contact_damage_cooldown_remaining = 0.0
         self.animations = self._load_animations()
         self.current_animation_name = "idle"
         self.facing_animation_name = "walk_right"
@@ -91,29 +96,14 @@ class Player(Entity):
         )
         self.shot_cooldown_remaining = PLAYER_SHOT_COOLDOWN_SECONDS
 
-    def _move_with_collision(
-        self, direction: pygame.Vector2, dt: float, *, speed: float
-    ) -> None:
+    def _move(self, direction: pygame.Vector2, dt: float, *, speed: float) -> None:
         if direction.length() == 0:
             return
 
         movement = direction.normalize() * speed * dt
-        distance = movement.length()
-        step_distance = max(1, min(self.rect.width, self.rect.height) / 2)
-        steps = max(1, int(distance / step_distance) + 1)
-        step = movement / steps
-
-        for _ in range(steps):
-            previous_position = self.position.copy()
-            previous_center = self.rect.center
-
-            self.position += step
+        self.position += movement
+        if self.rect is not None:
             self.rect.center = (round(self.position.x), round(self.position.y))
-
-            if self._is_colliding_with_shot_target():
-                self.position = previous_position
-                self.rect.center = previous_center
-                return
 
     def _is_colliding_with_shot_target(self) -> bool:
         player_rect = self.rect
@@ -126,6 +116,19 @@ class Player(Entity):
                 return True
 
         return False
+
+    def apply_contact_damage(self, dt: float) -> None:
+        self.contact_damage_cooldown_remaining = max(
+            0, self.contact_damage_cooldown_remaining - dt
+        )
+        if self.contact_damage_cooldown_remaining > 0:
+            return
+
+        if not self._is_colliding_with_shot_target():
+            return
+
+        self.health = max(0, self.health - ENEMY_CONTACT_DAMAGE)
+        self.contact_damage_cooldown_remaining = PLAYER_CONTACT_DAMAGE_COOLDOWN_SECONDS
 
     def update(self, dt: float) -> None:
         keys = pygame.key.get_pressed()
@@ -143,7 +146,7 @@ class Player(Entity):
 
         if direction.length() > 0:
             direction = direction.normalize()
-            self._move_with_collision(direction, dt, speed=150)
+            self._move(direction, dt, speed=150)
 
             if direction.x < 0:
                 self.facing_animation_name = "walk_left"
@@ -156,6 +159,8 @@ class Player(Entity):
 
         if self.shot_cooldown_remaining == 0:
             self.shoot()
+
+        self.apply_contact_damage(dt)
 
         self.animations[self.current_animation_name].update(dt)
         self.surf = self.animations[self.current_animation_name].image

@@ -1,5 +1,7 @@
 import pygame
 
+from constants import ENEMY_CONTACT_DAMAGE, PLAYER_HEALTH
+from game import Game
 from player import Player
 from shot import Shot
 
@@ -37,6 +39,8 @@ def make_player(center=(0, 0), targets=None):
     player.rect.center = center
     player.shot_targets = targets if targets is not None else pygame.sprite.Group()
     player.shot_cooldown_remaining = 0.0
+    player.contact_damage_cooldown_remaining = 0.0
+    player.health = PLAYER_HEALTH
     player.animations = {"idle": FakeAnimation(), "walk_left": FakeAnimation()}
     player.current_animation_name = "idle"
     player.facing_animation_name = "walk_left"
@@ -112,12 +116,28 @@ def test_player_update_shoots_automatically_when_cooldown_is_ready(monkeypatch):
     assert len(shots) == 1
 
 
-def test_player_movement_stops_before_overlapping_enemy():
+def test_player_can_move_through_enemies():
     enemy = Target((25, 0))
     targets = pygame.sprite.Group(enemy)
     player = make_player(targets=targets)
 
-    player._move_with_collision(pygame.Vector2(1, 0), 1.0, speed=100)
+    player._move(pygame.Vector2(1, 0), 1.0, speed=100)
 
-    assert player.position == pygame.Vector2(0, 0)
-    assert not player.rect.colliderect(enemy.rect)
+    assert player.position == pygame.Vector2(100, 0)
+
+
+def test_player_takes_damage_while_touching_enemy():
+    enemy = Target((0, 0))
+    player = make_player(targets=pygame.sprite.Group(enemy))
+
+    player.apply_contact_damage(0.1)
+
+    assert player.health == PLAYER_HEALTH - ENEMY_CONTACT_DAMAGE
+
+
+def test_game_is_over_when_player_health_reaches_zero():
+    game = Game.__new__(Game)
+    game.player = make_player()
+    game.player.health = 0
+
+    assert game.is_game_over()
