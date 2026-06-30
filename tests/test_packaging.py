@@ -1,7 +1,10 @@
 import shutil
 import subprocess
+import sys
 import zipfile
 from pathlib import Path
+
+import entity
 
 
 REQUIRED_ASSETS = {
@@ -30,6 +33,20 @@ REQUIRED_MODULES = {
     "sprite_frames.py",
     "sprite_sheet.py",
 }
+
+
+def test_frozen_pyinstaller_asset_lookup_uses_meipass(monkeypatch, tmp_path):
+    temp_dir = tmp_path / "Temp"
+    frozen_dir = temp_dir / "_MEI12345"
+    packaged_assets_dir = frozen_dir / "assets"
+    packaged_assets_dir.mkdir(parents=True)
+    (temp_dir / "assets").mkdir()
+
+    monkeypatch.setattr(entity, "__file__", str(frozen_dir / "entity.py"))
+    monkeypatch.setattr(sys, "frozen", True, raising=False)
+    monkeypatch.setattr(sys, "_MEIPASS", str(frozen_dir), raising=False)
+
+    assert entity._resolve_assets_dir() == packaged_assets_dir
 
 
 def test_wheel_includes_runtime_assets_and_modules(tmp_path):

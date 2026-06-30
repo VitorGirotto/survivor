@@ -1,9 +1,13 @@
+import sys
 from pathlib import Path
 
 import pygame
 
 
 def _resolve_assets_dir() -> Path:
+    if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
+        return Path(getattr(sys, "_MEIPASS")) / "assets"
+
     module_dir = Path(__file__).resolve().parent
     source_assets_dir = module_dir.parent / "assets"
     packaged_assets_dir = module_dir / "assets"
